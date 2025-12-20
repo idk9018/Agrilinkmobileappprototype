@@ -1,57 +1,13 @@
-import React, { useState } from 'react';
-import { ArrowLeft, MapPin, TrendingUp, TrendingDown, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, MapPin, TrendingUp, TrendingDown, ChevronDown, Loader2 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { fetchMarketPrices, MarketPrice } from '../services/market';
 
 interface MarketInsightsProps {
   onBack: () => void;
 }
 
 const locations = ['Lagos', 'Kano', 'Ibadan', 'Port Harcourt', 'Abuja'];
-
-const commodities = [
-  { 
-    name: 'Maize', 
-    price: 245000, 
-    unit: 'per ton',
-    change: 12,
-    bestTime: 'November - January',
-  },
-  { 
-    name: 'Rice (Paddy)', 
-    price: 320000, 
-    unit: 'per ton',
-    change: -5,
-    bestTime: 'September - November',
-  },
-  { 
-    name: 'Cassava', 
-    price: 85000, 
-    unit: 'per ton',
-    change: 8,
-    bestTime: 'December - February',
-  },
-  { 
-    name: 'Yam', 
-    price: 180000, 
-    unit: 'per ton',
-    change: 15,
-    bestTime: 'August - October',
-  },
-  { 
-    name: 'Tomatoes', 
-    price: 45000, 
-    unit: 'per basket',
-    change: -8,
-    bestTime: 'March - May',
-  },
-  { 
-    name: 'Pepper', 
-    price: 35000, 
-    unit: 'per basket',
-    change: 20,
-    bestTime: 'Year-round (Peak: Dec-Feb)',
-  },
-];
 
 const priceHistoryData = [
   { week: 'Week 1', price: 220000 },
@@ -66,11 +22,54 @@ const priceHistoryData = [
 export function MarketInsights({ onBack }: MarketInsightsProps) {
   const [selectedLocation, setSelectedLocation] = useState('Lagos');
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
-  const [selectedCommodity, setSelectedCommodity] = useState(commodities[0]);
+  const [commodities, setCommodities] = useState<MarketPrice[]>([]);
+  const [selectedCommodity, setSelectedCommodity] = useState<MarketPrice | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadPrices();
+  }, []);
+
+  const loadPrices = async () => {
+    try {
+      const data = await fetchMarketPrices();
+      setCommodities(data);
+      if (data.length > 0) {
+        setSelectedCommodity(data[0]);
+      }
+    } catch (err) {
+      setError('Failed to load market prices');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const formatPrice = (price: number) => {
     return `₦${price.toLocaleString()}`;
   };
+
+  if (loading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-[#F5F5F5]">
+        <Loader2 className="w-8 h-8 text-[#2E7D32] animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !selectedCommodity) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center bg-[#F5F5F5] p-6">
+        <p className="text-red-600 mb-4">{error || 'No data available'}</p>
+        <button
+          onClick={onBack}
+          className="text-[#2E7D32] font-medium hover:underline"
+        >
+          Go Back
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full flex flex-col bg-[#F5F5F5]">
@@ -134,9 +133,8 @@ export function MarketInsights({ onBack }: MarketInsightsProps) {
               <button
                 key={commodity.name}
                 onClick={() => setSelectedCommodity(commodity)}
-                className={`w-full bg-white rounded-[18px] p-4 shadow-md hover:shadow-lg transition-all ${
-                  selectedCommodity.name === commodity.name ? 'ring-2 ring-[#2E7D32]' : ''
-                }`}
+                className={`w-full bg-white rounded-[18px] p-4 shadow-md hover:shadow-lg transition-all ${selectedCommodity.name === commodity.name ? 'ring-2 ring-[#2E7D32]' : ''
+                  }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="text-left">
@@ -151,15 +149,14 @@ export function MarketInsights({ onBack }: MarketInsightsProps) {
                     <p className="text-[#1B1B1B] mb-1">
                       {formatPrice(commodity.price)}
                     </p>
-                    <div className={`flex items-center gap-1 justify-end ${
-                      commodity.change > 0 ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      {commodity.change > 0 ? (
+                    <div className={`flex items-center gap-1 justify-end ${commodity.change_percentage > 0 ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                      {commodity.change_percentage > 0 ? (
                         <TrendingUp className="w-4 h-4" />
                       ) : (
                         <TrendingDown className="w-4 h-4" />
                       )}
-                      <span>{Math.abs(commodity.change)}%</span>
+                      <span>{Math.abs(commodity.change_percentage)}%</span>
                     </div>
                   </div>
                 </div>
@@ -177,11 +174,11 @@ export function MarketInsights({ onBack }: MarketInsightsProps) {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={priceHistoryData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E0E0E0" />
-                <XAxis 
-                  dataKey="week" 
+                <XAxis
+                  dataKey="week"
                   tick={{ fill: '#666', fontSize: 12 }}
                 />
-                <YAxis 
+                <YAxis
                   tick={{ fill: '#666', fontSize: 12 }}
                   tickFormatter={(value) => `₦${(value / 1000)}k`}
                 />
@@ -194,10 +191,10 @@ export function MarketInsights({ onBack }: MarketInsightsProps) {
                     padding: '12px',
                   }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="price" 
-                  stroke="#2E7D32" 
+                <Line
+                  type="monotone"
+                  dataKey="price"
+                  stroke="#2E7D32"
                   strokeWidth={3}
                   dot={{ fill: '#2E7D32', r: 5 }}
                   activeDot={{ r: 7 }}
@@ -218,7 +215,7 @@ export function MarketInsights({ onBack }: MarketInsightsProps) {
                 Best Time to Sell {selectedCommodity.name}
               </h3>
               <p className="text-[#1B1B1B]/80 mb-3">
-                {selectedCommodity.bestTime}
+                {selectedCommodity.best_time}
               </p>
               <p className="text-[#1B1B1B]/70">
                 Prices typically peak during this period due to high demand and lower supply.

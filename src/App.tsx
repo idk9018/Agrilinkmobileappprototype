@@ -1,98 +1,86 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SplashScreen } from './components/SplashScreen';
-import { Onboarding } from './components/Onboarding';
+import { Onboarding as OnboardingScreen } from './components/Onboarding';
 import { LoginScreen } from './components/LoginScreen';
 import { HomeDashboard } from './components/HomeDashboard';
 import { CropAdvisory } from './components/CropAdvisory';
-import { CropDetail } from './components/CropDetail';
 import { MarketInsights } from './components/MarketInsights';
 import { AskExpert } from './components/AskExpert';
 import { TrainingVideos } from './components/TrainingVideos';
-import { VideoDetail } from './components/VideoDetail';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
-export type Screen = 
+export type Screen =
   | 'splash'
   | 'onboarding'
   | 'login'
   | 'home'
   | 'crop-advisory'
-  | 'crop-detail'
   | 'market-insights'
   | 'ask-expert'
-  | 'training-videos'
-  | 'video-detail';
+  | 'training-videos';
 
-export interface CropData {
-  id: string;
-  name: string;
-  image: string;
-}
-
-export interface VideoData {
-  id: string;
-  title: string;
-  category: string;
-  duration: string;
-  thumbnail: string;
-}
-
-export default function App() {
+function AppContent() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('splash');
-  const [selectedCrop, setSelectedCrop] = useState<CropData | null>(null);
-  const [selectedVideo, setSelectedVideo] = useState<VideoData | null>(null);
+  const { session, loading } = useAuth();
 
-  // Auto-transition from splash to onboarding
-  React.useEffect(() => {
-    if (currentScreen === 'splash') {
-      const timer = setTimeout(() => {
+  useEffect(() => {
+    // Show splash screen for 3 seconds
+    const timer = setTimeout(() => {
+      if (session) {
+        setCurrentScreen('home');
+      } else {
         setCurrentScreen('onboarding');
-      }, 2500);
-      return () => clearTimeout(timer);
-    }
-  }, [currentScreen]);
+      }
+    }, 3000);
 
-  const navigateTo = (screen: Screen, data?: any) => {
-    if (screen === 'crop-detail' && data) {
-      setSelectedCrop(data);
-    }
-    if (screen === 'video-detail' && data) {
-      setSelectedVideo(data);
-    }
+    return () => clearTimeout(timer);
+  }, [session]);
+
+  const handleNavigate = (screen: Screen) => {
     setCurrentScreen(screen);
   };
 
-  const renderScreen = () => {
-    switch (currentScreen) {
-      case 'splash':
-        return <SplashScreen />;
-      case 'onboarding':
-        return <Onboarding onComplete={() => navigateTo('login')} />;
-      case 'login':
-        return <LoginScreen onLogin={() => navigateTo('home')} />;
-      case 'home':
-        return <HomeDashboard onNavigate={navigateTo} />;
-      case 'crop-advisory':
-        return <CropAdvisory onNavigate={navigateTo} onBack={() => navigateTo('home')} />;
-      case 'crop-detail':
-        return <CropDetail crop={selectedCrop} onBack={() => navigateTo('crop-advisory')} />;
-      case 'market-insights':
-        return <MarketInsights onBack={() => navigateTo('home')} />;
-      case 'ask-expert':
-        return <AskExpert onBack={() => navigateTo('home')} />;
-      case 'training-videos':
-        return <TrainingVideos onNavigate={navigateTo} onBack={() => navigateTo('home')} />;
-      case 'video-detail':
-        return <VideoDetail video={selectedVideo} onBack={() => navigateTo('training-videos')} />;
-      default:
-        return <SplashScreen />;
-    }
-  };
+  if (currentScreen === 'splash') {
+    return <SplashScreen />;
+  }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="w-full max-w-md h-screen bg-white relative overflow-hidden">
-        {renderScreen()}
-      </div>
+    <div className="w-full h-screen bg-gray-50 max-w-md mx-auto relative overflow-hidden shadow-2xl sm:rounded-[32px] sm:my-8 sm:h-[800px]">
+      {currentScreen === 'onboarding' && (
+        <OnboardingScreen onComplete={() => setCurrentScreen('login')} />
+      )}
+
+      {currentScreen === 'login' && (
+        <LoginScreen onLogin={() => setCurrentScreen('home')} />
+      )}
+
+      {currentScreen === 'home' && (
+        <HomeDashboard onNavigate={handleNavigate} />
+      )}
+
+      {currentScreen === 'crop-advisory' && (
+        <CropAdvisory onBack={() => setCurrentScreen('home')} onNavigate={handleNavigate} />
+      )}
+
+      {currentScreen === 'market-insights' && (
+        <MarketInsights onBack={() => setCurrentScreen('home')} />
+      )}
+
+      {currentScreen === 'ask-expert' && (
+        <AskExpert onBack={() => setCurrentScreen('home')} />
+      )}
+
+      {currentScreen === 'training-videos' && (
+        <TrainingVideos onBack={() => setCurrentScreen('home')} onNavigate={handleNavigate} />
+      )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

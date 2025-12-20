@@ -1,7 +1,8 @@
 import React from 'react';
 import { Bell, User } from 'lucide-react';
 import type { Screen } from '../App';
-import { menuItems, weatherData, cropTip } from '../data/mockData';
+import { menuItems, cropTip } from '../data/mockData';
+import { useWeather } from '../hooks/useWeather';
 
 interface HomeDashboardProps {
   onNavigate: (screen: Screen) => void;
@@ -10,6 +11,7 @@ interface HomeDashboardProps {
 export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   const currentHour = new Date().getHours();
   const greeting = currentHour < 12 ? 'Good Morning' : currentHour < 18 ? 'Good Afternoon' : 'Good Evening';
+  const { weather, loading, error, locationName } = useWeather();
 
   return (
     <div className="w-full h-full flex flex-col bg-bg-main animate-fade-in">
@@ -44,12 +46,23 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               <p className="text-white/80 text-xs mb-1">
                 Weather Today
               </p>
-              <p className="text-white font-semibold flex items-center gap-2">
-                {weatherData.temp} <span className="text-xs font-normal opacity-80">{weatherData.condition}</span>
-              </p>
-              <p className="text-white/60 text-[10px]">
-                {weatherData.location}
-              </p>
+              {loading ? (
+                <div className="animate-pulse">
+                  <div className="h-6 w-16 bg-white/20 rounded mb-1"></div>
+                  <div className="h-3 w-24 bg-white/20 rounded"></div>
+                </div>
+              ) : error ? (
+                <p className="text-white text-sm">Unavailable</p>
+              ) : (
+                <>
+                  <p className="text-white font-semibold flex items-center gap-2">
+                    {weather?.current.temp}°C <span className="text-xs font-normal opacity-80">{weather?.current.condition}</span>
+                  </p>
+                  <p className="text-white/60 text-[10px]">
+                    {locationName}
+                  </p>
+                </>
+              )}
             </div>
             <div className="pl-2">
               <p className="text-white/80 text-xs mb-1">

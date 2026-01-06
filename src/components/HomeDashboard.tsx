@@ -3,6 +3,7 @@ import { Bell, User } from 'lucide-react';
 import type { Screen } from '../App';
 import { menuItems, cropTip } from '../data/mockData';
 import { useWeather } from '../hooks/useWeather';
+import { useAuth } from '../context/AuthContext';
 
 interface HomeDashboardProps {
   onNavigate: (screen: Screen) => void;
@@ -12,6 +13,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   const currentHour = new Date().getHours();
   const greeting = currentHour < 12 ? 'Good Morning' : currentHour < 18 ? 'Good Afternoon' : 'Good Evening';
   const { weather, loading, error, locationName } = useWeather();
+  const { user } = useAuth();
 
   return (
     <div className="w-full h-full flex flex-col bg-bg-main animate-fade-in">
@@ -22,15 +24,18 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
         <div className="flex items-center justify-between mb-6 relative z-10">
           <div className="flex items-center gap-3">
-            <div className="bg-white/20 rounded-full p-2 backdrop-blur-sm">
+            <button
+              onClick={() => onNavigate('profile')}
+              className="bg-white/20 rounded-full p-2 backdrop-blur-sm transition-transform active:scale-95"
+            >
               <User className="w-8 h-8 text-white" />
-            </div>
+            </button>
             <div>
               <p className="text-white/90 text-sm font-medium">
                 {greeting}
               </p>
               <h2 className="text-white text-xl font-bold">
-                Farmer Ayo
+                {user?.user_metadata?.full_name || 'Farmer'}
               </h2>
             </div>
           </div>

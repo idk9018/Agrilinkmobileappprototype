@@ -9,15 +9,27 @@ interface MarketInsightsProps {
 
 const locations = ['Lagos', 'Kano', 'Ibadan', 'Port Harcourt', 'Abuja'];
 
-const priceHistoryData = [
-  { week: 'Week 1', price: 220000 },
-  { week: 'Week 2', price: 225000 },
-  { week: 'Week 3', price: 235000 },
-  { week: 'Week 4', price: 230000 },
-  { week: 'Week 5', price: 240000 },
-  { week: 'Week 6', price: 242000 },
-  { week: 'Week 7', price: 245000 },
-];
+const generateHistoryData = (item: MarketPrice) => {
+  const data = [];
+  let currentPrice = item.price;
+  const isPositive = item.change_percentage >= 0;
+
+  // Generate 7 days backwards
+  for (let i = 6; i >= 0; i--) {
+    data.unshift({
+      week: `Day ${7 - i}`,
+      price: Math.round(currentPrice)
+    });
+    // Reverse the trend to fake history
+    const change = (currentPrice * (Math.random() * 2 + 0.5)) / 100;
+    if (isPositive) {
+      currentPrice -= change; // If trend is up, history was lower
+    } else {
+      currentPrice += change; // If trend is down, history was higher
+    }
+  }
+  return data;
+};
 
 export function MarketInsights({ onBack }: MarketInsightsProps) {
   const [selectedLocation, setSelectedLocation] = useState('Lagos');
@@ -172,7 +184,7 @@ export function MarketInsights({ onBack }: MarketInsightsProps) {
           </h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={priceHistoryData}>
+              <LineChart data={generateHistoryData(selectedCommodity)}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E0E0E0" />
                 <XAxis
                   dataKey="week"
@@ -194,9 +206,9 @@ export function MarketInsights({ onBack }: MarketInsightsProps) {
                 <Line
                   type="monotone"
                   dataKey="price"
-                  stroke="#2E7D32"
+                  stroke={selectedCommodity.change_percentage >= 0 ? "#2E7D32" : "#EF4444"}
                   strokeWidth={3}
-                  dot={{ fill: '#2E7D32', r: 5 }}
+                  dot={{ fill: selectedCommodity.change_percentage >= 0 ? "#2E7D32" : "#EF4444", r: 5 }}
                   activeDot={{ r: 7 }}
                 />
               </LineChart>

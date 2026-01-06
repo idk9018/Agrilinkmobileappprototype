@@ -15,37 +15,62 @@ export function useWeather(): UseWeatherResult {
     const [locationName, setLocationName] = useState('Locating...');
 
     useEffect(() => {
-        if (!navigator.geolocation) {
-            setError('Geolocation is not supported by your browser');
-            setLoading(false);
-            return;
-        }
+        let mounted = true;
 
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                try {
-                    const { latitude, longitude } = position.coords;
+        const loadWeatherData = async (lat: number, lon: number, name?: string) => {
+            try {
+                const [weatherData, fetchedName] = await Promise.all([
+                    fetchWeather(lat, lon),
+                    name ? Promise.resolve(name) : fetchLocationName(lat, lon)
+                ]);
 
-                    // Fetch weather data and location name in parallel
-                    const [weatherData, location] = await Promise.all([
-                        fetchWeather(latitude, longitude),
-                        fetchLocationName(latitude, longitude)
-                    ]);
-
+                if (mounted) {
                     setWeather(weatherData);
-                    setLocationName(location);
-
+                    setLocationName(fetchedName);
                     setLoading(false);
-                } catch (err) {
+                }
+            } catch (err) {
+                if (mounted) {
                     setError('Failed to fetch weather data');
                     setLoading(false);
                 }
-            },
-            (err) => {
-                setError('Unable to retrieve your location');
-                setLoading(false);
             }
-        );
+        };
+
+        const handleLocationSuccess = (position: GeolocationPosition) => {
+            loadWeatherData(position.coords.latitude, position.coords.longitude);
+        };
+
+        const handleLocationError = async () => {
+            console.log('Geolocation failed, falling back to IP location...');
+            try {
+                // Determine module to import dynamically or just use the service we wrote
+                const { fetchLocationByIP } = await import('../services/weather');
+                const fallback = await fetchLocationByIP();
+                if (mounted) {
+                    loadWeatherData(fallback.lat, fallback.lon, fallback.name);
+                }
+            } catch (e) {
+                if (mounted) {
+                    setError('Unable to retrieve location');
+                    setLoading(false);
+                }
+            }
+        };
+
+        if ('geolocation' in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                handleLocationSuccess,
+                handleLocationError,
+                { timeout: 7000 } // Add timeout to trigger fallback faster
+            );
+        } else {
+            handleLocationError();
+        }
+
+        return () => {
+            mounted = false;
+        };
     }, []);
 
     return { weather, loading, error, locationName };

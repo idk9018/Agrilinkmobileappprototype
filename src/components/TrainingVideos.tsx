@@ -15,57 +15,65 @@ const videos: VideoData[] = [
     title: 'How to Prepare Your Farm for Planting Season',
     category: 'Planting',
     duration: '8:45',
-    thumbnail: 'https://images.unsplash.com/photo-1596289428111-54fc7aaa79d4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYXJtaW5nJTIwdHV0b3JpYWx8ZW58MXx8fHwxNzY1MjM1NzI5fDA&ixlib=rb-4.1.0&q=80&w=1080',
+    thumbnail: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/John_Deere_tractor_when_plowing_a_field.webm/800px--John_Deere_tractor_when_plowing_a_field.webm.jpg',
+    videoUrl: 'https://upload.wikimedia.org/wikipedia/commons/9/96/John_Deere_tractor_when_plowing_a_field.webm',
   },
   {
     id: '2',
     title: 'Effective Pest Control Methods for Maize',
     category: 'Pest Control',
     duration: '12:30',
-    thumbnail: 'https://images.unsplash.com/photo-1761203370916-14d311ff9ad5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZXN0JTIwY29udHJvbCUyMGZhcm1pbmd8ZW58MXx8fHwxNzY1MjM1NzMwfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    thumbnail: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/View_of_a_Maize_Farm.webm/800px--View_of_a_Maize_Farm.webm.jpg',
+    videoUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/89/View_of_a_Maize_Farm.webm',
   },
   {
     id: '3',
     title: 'Soil Testing and Improvement Techniques',
     category: 'Soil Care',
     duration: '15:20',
-    thumbnail: 'https://images.unsplash.com/photo-1710090720809-527cefdac598?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2lsJTIwdGVzdGluZyUyMGFncmljdWx0dXJlfGVufDF8fHx8MTc2NTE5MjAyNHww&ixlib=rb-4.1.0&q=80&w=1080',
+    thumbnail: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/How_to_collect_a_soil_sample.webm/800px--How_to_collect_a_soil_sample.webm.jpg',
+    videoUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/15/How_to_collect_a_soil_sample.webm',
   },
   {
     id: '4',
     title: 'Best Practices for Cassava Harvesting',
     category: 'Harvesting',
     duration: '10:15',
-    thumbnail: 'https://images.unsplash.com/photo-1700594066143-6b1f0f4e12ed?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYXNzYXZhJTIwZmFybXxlbnwxfHx8fDE3NjUyMzU3Mjh8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    thumbnail: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Local_cassava_farming_in_Ohaji_Egbema%2C_Imo_State%2C_Nigeria.webm/800px--Local_cassava_farming_in_Ohaji_Egbema%2C_Imo_State%2C_Nigeria.webm.jpg',
+    videoUrl: 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Local_cassava_farming_in_Ohaji_Egbema%2C_Imo_State%2C_Nigeria.webm',
   },
   {
     id: '5',
     title: 'Rice Transplanting Step-by-Step Guide',
     category: 'Planting',
     duration: '14:00',
-    thumbnail: 'https://images.unsplash.com/photo-1651981350249-6173caeeb660?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyaWNlJTIwZmFybWluZ3xlbnwxfHx8fDE3NjUyMzU3Mjl8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    thumbnail: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Rice_transplanter_in_use_-_rural_Kanagawa_-_2023_June_13.webm/800px--Rice_transplanter_in_use_-_rural_Kanagawa_-_2023_June_13.webm.jpg',
+    videoUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/29/Rice_transplanter_in_use_-_rural_Kanagawa_-_2023_June_13.webm',
   },
   {
     id: '6',
     title: 'Organic Fertilizer Preparation at Home',
     category: 'Soil Care',
     duration: '9:30',
-    thumbnail: 'https://images.unsplash.com/photo-1596289428111-54fc7aaa79d4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYXJtaW5nJTIwdHV0b3JpYWx8ZW58MXx8fHwxNzY1MjM1NzI5fDA&ixlib=rb-4.1.0&q=80&w=1080',
+    thumbnail: 'https://images.unsplash.com/photo-1596289428111-54fc7aaa79d4?w=800',
+    videoUrl: '/videos/organic_farming.ogv',
   },
   {
     id: '7',
     title: 'Identifying and Treating Common Plant Diseases',
     category: 'Pest Control',
     duration: '11:45',
-    thumbnail: 'https://images.unsplash.com/photo-1608995855173-bb65a3fe1bec?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwZmFybWVyJTIwbWFpemV8ZW58MXx8fHwxNzY1MjM1NzI4fDA&ixlib=rb-4.1.0&q=80&w=1080',
+    thumbnail: 'https://images.unsplash.com/photo-1608995855173-bb65a3fe1bec?w=800',
+    videoUrl: '/videos/organic_farming.ogv',
   },
   {
     id: '8',
     title: 'Post-Harvest Storage Solutions',
     category: 'Harvesting',
     duration: '13:10',
-    thumbnail: 'https://images.unsplash.com/photo-1597474417024-3ca3baa9fb13?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx5YW0lMjBoYXJ2ZXN0fGVufDF8fHx8MTc2NTIzNTcyOXww&ixlib=rb-4.1.0&q=80&w=1080',
-  },
+    thumbnail: 'https://images.unsplash.com/photo-1597474417024-3ca3baa9fb13?w=800',
+    videoUrl: '/videos/organic_farming.ogv',
+  }
 ];
 
 export function TrainingVideos({ onNavigate, onBack }: TrainingVideosProps) {
@@ -114,11 +122,10 @@ export function TrainingVideos({ onNavigate, onBack }: TrainingVideosProps) {
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-5 py-2 rounded-full whitespace-nowrap transition-all ${
-                selectedCategory === category
-                  ? 'bg-[#2E7D32] text-white shadow-md'
-                  : 'bg-[#F5F5F5] text-gray-600 hover:bg-gray-200'
-              }`}
+              className={`px-5 py-2 rounded-full whitespace-nowrap transition-all ${selectedCategory === category
+                ? 'bg-[#2E7D32] text-white shadow-md'
+                : 'bg-[#F5F5F5] text-gray-600 hover:bg-gray-200'
+                }`}
             >
               {category}
             </button>

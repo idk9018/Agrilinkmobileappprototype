@@ -84,3 +84,26 @@ export async function fetchLocationName(lat: number, lon: number): Promise<strin
         return `${lat.toFixed(2)}°N, ${lon.toFixed(2)}°E`;
     }
 }
+
+export const DEFAULT_LOCATION = {
+    lat: 6.5244, // Lagos
+    lon: 3.3792,
+    name: 'Lagos, NG'
+};
+
+export async function fetchLocationByIP(): Promise<{ lat: number; lon: number; name: string }> {
+    try {
+        const response = await fetch('https://ipapi.co/json/');
+        if (!response.ok) throw new Error('IP Geolocation failed');
+
+        const data = await response.json();
+        return {
+            lat: data.latitude,
+            lon: data.longitude,
+            name: `${data.city}, ${data.country_code}`
+        };
+    } catch (error) {
+        console.warn('IP Geolocation failed, using default:', error);
+        return DEFAULT_LOCATION;
+    }
+}

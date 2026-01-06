@@ -15,12 +15,40 @@ export type Screen =
   | 'login'
   | 'home'
   | 'crop-advisory'
+  | 'crop-detail'
   | 'market-insights'
   | 'ask-expert'
-  | 'training-videos';
+  | 'training-videos'
+  | 'video-detail'
+  | 'profile';
+
+export interface VideoData {
+  id: string;
+  title: string;
+  category: string;
+  duration: string;
+  thumbnail: string;
+  videoUrl?: string; // Direct MP4 URL
+}
+
+export interface CropData {
+  id: string;
+  name: string;
+  image: string;
+  planting_guide?: {
+    soil: string;
+    sowing: string;
+    care: string;
+  };
+  fertilizer?: string;
+  pests?: string[];
+  harvest?: string;
+}
 
 function AppContent() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('splash');
+  const [selectedCrop, setSelectedCrop] = useState<CropData | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<VideoData | null>(null);
   const { session, loading } = useAuth();
 
   useEffect(() => {
@@ -36,7 +64,13 @@ function AppContent() {
     return () => clearTimeout(timer);
   }, [session]);
 
-  const handleNavigate = (screen: Screen) => {
+  const handleNavigate = (screen: Screen, data?: any) => {
+    if (screen === 'crop-detail' && data) {
+      setSelectedCrop(data);
+    }
+    if (screen === 'video-detail' && data) {
+      setSelectedVideo(data);
+    }
     setCurrentScreen(screen);
   };
 
@@ -58,8 +92,16 @@ function AppContent() {
         <HomeDashboard onNavigate={handleNavigate} />
       )}
 
+      {currentScreen === 'profile' && (
+        <ProfileSettings onBack={() => setCurrentScreen('home')} />
+      )}
+
       {currentScreen === 'crop-advisory' && (
         <CropAdvisory onBack={() => setCurrentScreen('home')} onNavigate={handleNavigate} />
+      )}
+
+      {currentScreen === 'crop-detail' && selectedCrop && (
+        <CropDetail crop={selectedCrop} onBack={() => setCurrentScreen('crop-advisory')} />
       )}
 
       {currentScreen === 'market-insights' && (
@@ -67,15 +109,23 @@ function AppContent() {
       )}
 
       {currentScreen === 'ask-expert' && (
-        <AskExpert onBack={() => setCurrentScreen('home')} />
+        <AskExpert onBack={() => setCurrentScreen('home')} onNavigate={handleNavigate} />
       )}
 
       {currentScreen === 'training-videos' && (
         <TrainingVideos onBack={() => setCurrentScreen('home')} onNavigate={handleNavigate} />
       )}
+
+      {currentScreen === 'video-detail' && selectedVideo && (
+        <VideoDetail video={selectedVideo} onBack={() => setCurrentScreen('training-videos')} />
+      )}
     </div>
   );
 }
+
+import { CropDetail } from './components/CropDetail';
+import { ProfileSettings } from './components/ProfileSettings';
+import { VideoDetail } from './components/VideoDetail';
 
 export default function App() {
   return (

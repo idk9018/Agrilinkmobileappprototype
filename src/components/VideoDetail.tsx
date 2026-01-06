@@ -1,137 +1,106 @@
-import React from 'react';
-import { ArrowLeft, Play, ThumbsUp, Share2, Download, CheckCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, Clock, Share2, ThumbsUp, Bookmark } from 'lucide-react';
 import type { VideoData } from '../App';
 
 interface VideoDetailProps {
-  video: VideoData | null;
+  video: VideoData;
   onBack: () => void;
 }
 
-const relatedTopics = [
-  'Proper land preparation',
-  'Seed selection and treatment',
-  'Optimal planting depth',
-  'Irrigation management',
-  'Weed control strategies',
-];
-
 export function VideoDetail({ video, onBack }: VideoDetailProps) {
-  if (!video) return null;
+  const [likes, setLikes] = useState(Math.floor(Math.random() * 50) + 12);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+
+  const handleLike = () => {
+    if (isLiked) {
+      setLikes(prev => prev - 1);
+    } else {
+      setLikes(prev => prev + 1);
+    }
+    setIsLiked(!isLiked);
+  };
 
   return (
-    <div className="w-full h-full flex flex-col bg-[#F5F5F5]">
-      {/* Video player */}
-      <div className="relative bg-black">
-        <div className="relative h-64 bg-gray-900">
-          <img
-            src={video.thumbnail}
-            alt={video.title}
-            className="w-full h-full object-cover opacity-70"
+    <div className="w-full h-full flex flex-col bg-white">
+      {/* Video Player */}
+      <div className="relative w-full aspect-video bg-black">
+        {video.videoUrl ? (
+          <video
+            className="w-full h-full object-cover"
+            src={video.videoUrl}
+            title={video.title}
+            controls
+            autoPlay
+            muted
+            playsInline
           />
-          {/* Play button */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <button className="bg-white/95 backdrop-blur-sm rounded-full p-6 shadow-2xl hover:bg-white transition-all hover:scale-110 active:scale-95">
-              <Play className="w-12 h-12 text-[#2E7D32] fill-[#2E7D32]" />
-            </button>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-white">
+            <p>Video not available</p>
           </div>
-        </div>
+        )}
 
-        {/* Back button */}
+        {/* Back button overlay */}
         <button
           onClick={onBack}
-          className="absolute top-4 left-4 p-2 bg-black/50 backdrop-blur-sm rounded-full shadow-lg hover:bg-black/70 transition-colors"
+          className="absolute top-4 left-4 p-2 bg-black/50 backdrop-blur-sm rounded-full text-white hover:bg-black/70 transition-colors"
         >
-          <ArrowLeft className="w-6 h-6 text-white" />
+          <ArrowLeft className="w-6 h-6" />
         </button>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
-        {/* Video info */}
-        <div className="bg-white px-6 py-6 border-b border-gray-200">
-          <div className="flex items-start justify-between gap-4 mb-4">
-            <div className="flex-1">
-              <span className="inline-block px-3 py-1 bg-[#E8F5E9] text-[#2E7D32] rounded-full mb-3">
-                {video.category}
-              </span>
-              <h1 className="text-[#1B1B1B] mb-2">
-                {video.title}
-              </h1>
-              <p className="text-gray-600">
-                Duration: {video.duration} • 45,234 views
-              </p>
-            </div>
-          </div>
+      <div className="flex-1 overflow-y-auto p-6">
+        <span className="inline-block px-3 py-1 bg-[#E8F5E9] text-[#2E7D32] rounded-full text-sm font-medium mb-3">
+          {video.category}
+        </span>
 
-          {/* Action buttons */}
-          <div className="flex items-center gap-3">
-            <button className="flex-1 bg-[#2E7D32] text-white py-3 rounded-[16px] flex items-center justify-center gap-2 shadow-md hover:bg-[#1B5E20] transition-colors">
-              <ThumbsUp className="w-5 h-5" />
-              <span>Like (2.3k)</span>
-            </button>
-            <button className="bg-[#F5F5F5] p-3 rounded-[16px] hover:bg-gray-200 transition-colors">
-              <Share2 className="w-5 h-5 text-[#1B1B1B]" />
-            </button>
-            <button className="bg-[#F5F5F5] p-3 rounded-[16px] hover:bg-gray-200 transition-colors">
-              <Download className="w-5 h-5 text-[#1B1B1B]" />
-            </button>
-          </div>
+        <h1 className="text-2xl font-bold text-[#1B1B1B] mb-2">
+          {video.title}
+        </h1>
+
+        <div className="flex items-center gap-2 text-gray-500 text-sm mb-6">
+          <Clock className="w-4 h-4" />
+          <span>{video.duration}</span>
+          <span>•</span>
+          <span>Uploaded today</span>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center justify-between border-y border-gray-100 py-4 mb-6">
+          <button
+            onClick={handleLike}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors ${isLiked ? 'bg-[#2E7D32]/10 text-[#2E7D32]' : 'hover:bg-gray-50 text-gray-600'
+              }`}
+          >
+            <ThumbsUp className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+            <span className="font-medium">{likes}</span>
+          </button>
+
+          <button
+            onClick={() => setIsSaved(!isSaved)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors ${isSaved ? 'bg-[#2E7D32]/10 text-[#2E7D32]' : 'hover:bg-gray-50 text-gray-600'
+              }`}
+          >
+            <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
+            <span className="font-medium">{isSaved ? 'Saved' : 'Save'}</span>
+          </button>
+
+          <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-gray-600 rounded-full transition-colors">
+            <Share2 className="w-5 h-5" />
+            <span className="font-medium">Share</span>
+          </button>
         </div>
 
         {/* Description */}
-        <div className="bg-white px-6 py-6 mt-2">
-          <h3 className="text-[#1B1B1B] mb-4">
-            About This Video
-          </h3>
-          <p className="text-gray-600 leading-relaxed mb-6">
-            Learn the essential techniques for preparing your farm before the planting season begins. This comprehensive guide covers soil preparation, land clearing, and pre-planting treatments that will help ensure a successful harvest.
+        <div className="space-y-4">
+          <h3 className="font-bold text-lg text-[#1B1B1B]">About this video</h3>
+          <p className="text-gray-600 leading-relaxed">
+            Learn essential techniques for {video.title.toLowerCase()}. This comprehensive guide covers everything from preparation to execution, ensuring you get the best results for your farm.
           </p>
-
-          <div className="bg-gradient-to-r from-[#2E7D32] to-[#1B5E20] rounded-[20px] p-5 text-white">
-            <h4 className="mb-3">
-              What You Will Learn:
-            </h4>
-            <ul className="space-y-2">
-              {relatedTopics.map((topic, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                  <span>{topic}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Instructor */}
-        <div className="bg-white px-6 py-6 mt-2">
-          <h3 className="text-[#1B1B1B] mb-4">
-            Expert Instructor
-          </h3>
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#2E7D32] to-[#1B5E20] flex items-center justify-center">
-              <span className="text-white text-xl">DA</span>
-            </div>
-            <div className="flex-1">
-              <h4 className="text-[#1B1B1B] mb-1">
-                Dr. Adebayo Oluwaseun
-              </h4>
-              <p className="text-gray-600 mb-2">
-                Agricultural Specialist
-              </p>
-              <p className="text-gray-500">
-                15 years experience • 200+ videos
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Tips */}
-        <div className="bg-[#FFF9E6] border-2 border-[#FFC107] rounded-[22px] p-6 mx-6 my-6">
-          <h4 className="text-[#1B1B1B] mb-3">
-            💡 Pro Tip
-          </h4>
-          <p className="text-gray-700">
-            Download this video to watch offline and share with other farmers in your community. Knowledge sharing helps everyone grow better crops!
+          <p className="text-gray-600 leading-relaxed">
+            Perfect for both beginners and experienced farmers looking to improve their yield and efficiency.
           </p>
         </div>
       </div>

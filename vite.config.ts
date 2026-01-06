@@ -50,10 +50,11 @@ export default defineConfig({
     },
   },
   build: {
-    target: 'esnext',
+    target: 'es2020',
     outDir: 'build',
   },
   server: {
+    host: true, // Exposes the server to the network
     port: 3000,
     open: true,
   },
